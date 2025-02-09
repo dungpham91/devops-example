@@ -5,6 +5,12 @@ metadata:
   namespace: app
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/server-snippet: |
+      if ($http_x_api_key != "yuXCNy8Mnk8HnDCOvsypj3C4Q5z2yL0P93R8YIXt") {
+          return 403;
+      }
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header x-api-key $http_x_api_key;
 spec:
   ingressClassName: nginx
   rules:
