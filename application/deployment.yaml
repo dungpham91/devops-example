@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpbin
+  namespace: app
+  labels:
+    app: httpbin
+    log-group: "aws-eks-httpbin"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: httpbin
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: httpbin
+        log-group: "aws-eks-httpbin"
+    spec:
+      containers:
+        - name: httpbin
+          image: kennethreitz/httpbin
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /status/200
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /status/200
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
